@@ -58,6 +58,11 @@ jobs:
             zip -r /home/circleci/repo/reports/test_report.zip /home/circleci/repo/reports/cover
             rm -rf /home/circleci/repo/reports/cover
 
+      - run:
+          name: save the project
+          command: |
+            zip -r /home/circleci/repo/reports/$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM.zip /home/circleci/repo/
+
       - store_artifacts:
           path: reports/
           destination: test_report_1
