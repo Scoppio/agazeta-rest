@@ -28,6 +28,7 @@ MINNING_URLS = {
 # Application definition
 
 PRE_REQ_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,7 +36,7 @@ PRE_REQ_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
-    'invitations'
+    'invitations',
     'rest_framework',
     'rest_framework.authtoken',
     'django_pydenticon',
