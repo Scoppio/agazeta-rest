@@ -40,7 +40,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "dev-requirements.txt" }}
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
 
       # run tests!
       - run:
@@ -50,7 +50,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python manage.py test arquivo doraR -v 2 --settings=settings.circleci
+            python manage.py test -v 3 --settings=settings.circleci
 
       - run:
           name: save test reports
@@ -61,6 +61,7 @@ jobs:
       - run:
           name: save the project
           command: |
+            rm -rf venv
             zip -r /home/circleci/repo/reports/$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM.zip /home/circleci/repo/
 
       - store_artifacts:
