@@ -14,13 +14,13 @@ from settings.base import MINNING_URLS
 class DoraR():
     logger = logging.getLogger('sentry.errors')
 
-    def __init__(self, verbose=False, past_days=7, max_retries=3, ranked_only=True, limit=None):
+    def __init__(self, verbose=False, past_days=7, max_retries=3, ranked_only=True, limit=False):
         self.from_date = datetime.today() - timedelta(days=past_days)
         self.past_days = past_days
         self.max_retries = max_retries
         self.ranked_only = ranked_only
         self.limit = limit
-        self.logger.info("Starting Dora R. from %s until today", self.from_date)
+        self.logger.info("Starting Dora R. with config - %d days window, %d retries, ranked_only=%s, limit=%s", past_days, max_retries, ranked_only, limit)
         self.url = MINNING_URLS["Track-o-Bot"]
 
     def getAllDataFromSingleToken(self, tob_token):
@@ -30,7 +30,10 @@ class DoraR():
     def getTobData(self, tob_token, override_limit_date=False):
         """Actually downloads the raw data from track o bot"""
         from_date = time.mktime(self.from_date.timetuple())
-
+        if override_limit_date:
+            self.logger.warning("Capturing all data available for ToB account %s", tob_token.username)
+        else:
+            self.logger.info("Capturing data available for ToB account %s", tob_token.username)
         page = 1
         end = False
         data_history = []
@@ -38,7 +41,7 @@ class DoraR():
         while (True):
             try:
                 response = requests.get(self.url, data={ "page": page, "username": tob_token.username, "token": tob_token.token })
-                self.logger.debug("username %s - page %d - account %s",tob_token.username, page, tob_token.user)
+                self.logger.debug("username %s - page %d - user %s - status code of the request %d",tob_token.username, page, tob_token.user, response.status_code)
 
             except Exception as e:
                 self.logger.error(

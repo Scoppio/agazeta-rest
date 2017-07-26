@@ -116,7 +116,8 @@ def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck,
             return
 
     except Exception as e:
-        logger.info("New match entry for the database, match_id={}".format(match_id))
+        pass
+
 
     # if the match is here, add the user to it if he is not null
     # add the cards to it related to the match
@@ -137,27 +138,28 @@ def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck,
 
     try:
         match.save()
+        logger.info("New match entry saved, match_id=%d", match_id)
+    except Exception as e:
+        logger.error("New match entry could NOT be saved, match_id=%d",match_id)
+        return
         # add user if present
-        if user:
-            match.user.add(user)
+    if user:
+        match.user.add(user)
 
         # save cards
-        for card in cards:
-            if card['player'] == 'me':
-                blueCard = CardPlayed(match=match, card=str(card['card']['id']),
-                                       turn_played = card['turn'], is_spawned=False, user=user)
-                blueCard.save()
-                match.blue_played_cards.add(blueCard)
-            else:
-                redCard = CardPlayed(match=match, card=str(card['card']['id']),
-                                       turn_played=card['turn'], is_spawned=False)
-                redCard.save()
-                match.red_played_cards.add(redCard)
+    for card in cards:
+        if card['player'] == 'me':
+            blueCard = CardPlayed(match=match, card=str(card['card']['id']),
+                                   turn_played = card['turn'], is_spawned=False, user=user)
+            blueCard.save()
+            match.blue_played_cards.add(blueCard)
+        else:
+            redCard = CardPlayed(match=match, card=str(card['card']['id']),
+                                   turn_played=card['turn'], is_spawned=False)
+            redCard.save()
+            match.red_played_cards.add(redCard)
 
-        match.save()
-
-    except Exception as e:
-        logger.error("An unexpected error occured", e)
+    match.save()
 
 
 def compare_cards_and_update(match, user, cards):
