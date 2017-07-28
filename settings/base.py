@@ -25,6 +25,8 @@ MINNING_URLS = {
     "Track-o-Bot" : config("TOB_URL")
 }
 
+MONGODBNAME = config("MONGO_DB_NAME")
+
 # Application definition
 
 PRE_REQ_APPS = [

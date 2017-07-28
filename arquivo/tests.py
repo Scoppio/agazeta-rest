@@ -1,7 +1,9 @@
+import logging
 from django.test import TestCase
 from django.contrib.auth.models import User
 from model_mommy import mommy
 from .models import Match, TobToken, CardPlayed
+from .documents import MMatch, MCardPlayed
 
 class MatchRelationshipTestCase(TestCase):
     def setUp(self):
@@ -23,3 +25,15 @@ class MatchRelationshipTestCase(TestCase):
         user = mommy.make('User')
         assert user.profile != None
         assert user.profile.avatar != None
+
+class MongoDbDocuments(TestCase):
+    logger = logging.getLogger('sentry.errors')
+
+    def setUp(self):
+        # self.MongoMatch = mommy.make('documents.MMatch')
+        pass
+
+    def test_Mongo_Match_Created(self):
+        # assert len(self.MongoMatch) != 0
+        # assert self.MongoMatch.find() != 0
+        pass

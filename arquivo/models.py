@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class Profile(models.Model):
     ACCOUNT_TYPE = (
         ('f', 'Free'),
@@ -86,3 +87,4 @@ class CardPlayed(models.Model):
 
     def __repr__(self):
         return "card_played [card={} match_id={} turn_played={} is_spawned={}]".format(self.card, self.match.id, self.turn_played, self.is_spawned)
+

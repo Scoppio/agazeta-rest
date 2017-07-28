@@ -9,13 +9,18 @@ jobs:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.6.1
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
+
+      # MySQL to run the std stuff, like users, sessions, etc
+      # For easy connection to other Django stuff
       - image: circleci/mysql:latest
         environment:
         - MYSQL_ROOT_HOST=%
+
+      # MongoDB to keep matches and cards used in matches
+      - image: circleci/mongo:3.5
 
     working_directory: ~/repo
 
@@ -62,7 +67,7 @@ jobs:
           name: save the project
           command: |
             rm -rf venv
-            zip -r /home/circleci/repo/reports/$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM.zip /home/circleci/repo/
+            zip -r /home/circleci/repo/reports/$CIRCLE_PROJECT_REPONAME-$CIRCLE_BUILD_NUM.zip /home/circleci/repo/
 
       - store_artifacts:
           path: reports/
