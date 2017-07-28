@@ -1,4 +1,5 @@
 import logging
+import datetime
 from django.test import TestCase
 from django.contrib.auth.models import User
 from model_mommy import mommy
@@ -30,10 +31,18 @@ class MongoDbDocuments(TestCase):
     logger = logging.getLogger('sentry.errors')
 
     def setUp(self):
-        # self.MongoMatch = mommy.make('documents.MMatch')
-        pass
+        card1 = MCardPlayed(card="HAL-001", turn_played=1, is_spawned=False).save()
+        card2 = MCardPlayed(card="TES-055", turn_played=2, is_spawned=False).save()
+        card3 = MCardPlayed(card="BOL-124", turn_played=3, is_spawned=False).save()
+        card4 = MCardPlayed(card="JUN-998", turn_played=4, is_spawned=False).save()
+
+        MMatch(match_id=1, match_mode="test", user=[42,99], date=datetime.datetime.now(),
+                                 blue_rank=20, blue_hero="Rogue", blue_deck="Random Blue Deck",
+                                 red_deck="Random Red Deck", red_hero="Warrior", turns_played=99, red_starts=False,
+                                 blue_won=True, blue_played_cards=[card1,card2], red_played_cards=[card4,card3]).save()
 
     def test_Mongo_Match_Created(self):
-        # assert len(self.MongoMatch) != 0
-        # assert self.MongoMatch.find() != 0
-        pass
+        self.logger.info("Number of documents MMatch = %d", MMatch.objects.count())
+        assert MMatch.objects.count() != 0
+        assert len(MMatch.objects.first().blue_played_cards) == 2
+        
