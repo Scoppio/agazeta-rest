@@ -7,7 +7,7 @@ import argparse
 import pandas as pd
 from threading import Thread
 from datetime import datetime, timedelta
-from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatch
+from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatch, saveMatchOnMongo
 from settings.base import MINNING_URLS
 
 
@@ -131,7 +131,7 @@ class DoraR():
         df[['blue_rank']] = df[['blue_rank']].fillna(20)
 
         for index, entry in df.iterrows():
-            saveMatch(match_id=entry['match_id'],
+            saveMatchOnMongo(match_id=entry['match_id'],
                         match_mode=entry['match_mode'],
                         user=entry['user'],
                         date=entry['date'],

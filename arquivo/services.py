@@ -8,6 +8,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from .models import TobToken, Match, CardPlayed
+from .documents import MMatch, MCardPlayed
 from django.contrib.auth.models import User
 from settings.base import MINNING_URLS
 
@@ -77,6 +78,7 @@ def getValidTobTokensYield(limit : int=0):
         logger.debug("tob token {} of {} - username {} - account {}".format(i, len(sqlret), row.username, row.user))
         yield row
 
+
 def getAllTobTokensYield(limit : int=0):
     """Get username, token and account from database"""
     sqlret = TobToken.objects.all() if not limit \
@@ -100,6 +102,66 @@ def datetimeConversion(date='2016-12-02T02:29:09.000Z'):
     return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.000Z')
 
 
+def saveMatchOnMongo(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck, red_hero, red_deck, turns_played,
+               red_starts, blue_won, cards):
+
+    # First check if the match exists
+    try:
+        match = MMatch.objects.get(match_id=match_id)
+        if user.id in match.user:
+            return
+        else:
+            match.user.add(user.id)
+            logger.info("New match entry for the database, match_id={}".format(match_id))
+            return
+
+    except Exception as e:
+        pass
+
+    # if the match is here, add the user to it if he is not null
+    # add the cards to it related to the match
+    blueCards = []
+    redCards = []
+    for card in cards:
+        if card['player'] == 'me':
+            blueCards.append(MCardPlayed(card=str(card['card']['id']),
+                                   turn_played = card['turn'], is_spawned=False))
+        else:
+            redCards.append(MCardPlayed(card=str(card['card']['id']),
+                                   turn_played=card['turn'], is_spawned=False))
+
+    match = MMatch(
+        match_id = match_id ,
+        match_mode = match_mode,
+        date = date,
+        blue_rank = blue_rank,
+        blue_hero = blue_hero,
+        blue_deck = blue_deck,
+        red_hero = red_hero,
+        red_deck = red_deck  ,
+        turns_played = turns_played,
+        red_starts = red_starts,
+        blue_won = blue_won,
+        blue_played_cards=blueCards,
+        red_played_cards=redCards
+    )
+
+    if user:
+        match.user.add(user)
+
+    try:
+        match.save()
+        logger.info("New match entry saved, match_id=%d", match_id)
+    except Exception as e:
+        logger.warning("New match entry could NOT be saved, match_id=%d, %s",match_id, e)
+
+    if user and user.id not in match.user:
+        match.user.add(user.id)
+        match.save()
+
+    return
+
+
 def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck, red_hero, red_deck, turns_played,
                red_starts, blue_won, cards):
 
@@ -111,13 +173,11 @@ def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck,
             return
         else:
             match.user.add(user)
-            compare_cards_and_update(match, user, cards)
+            compareCardsAndUpdate(match, user, cards)
             logger.info("New match entry for the database, match_id={}".format(match_id))
             return
-
     except Exception as e:
         pass
-
 
     # if the match is here, add the user to it if he is not null
     # add the cards to it related to the match
@@ -162,7 +222,7 @@ def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero, blue_deck,
     match.save()
 
 
-def compare_cards_and_update(match, user, cards):
+def compareCardsAndUpdate(match, user, cards):
     ''' Assigns an user to either the blue set of cards
      or red set of card in a preexistant match '''
     blueCards = [ int(b.id) for b in match.blue_played_cards.all()]

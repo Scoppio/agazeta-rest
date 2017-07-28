@@ -18,7 +18,7 @@ class MCardPlayed(Document):
 
 
 class MMatch(Document):
-    match_id = IntField(required=True)
+    match_id = IntField(required=True, unique=True)
     match_mode = StringField(max_length=20, required=True)
     user = ListField(IntField())
     date = DateTimeField(required=True)
@@ -32,6 +32,10 @@ class MMatch(Document):
     blue_won = BooleanField(required=True)
     blue_played_cards = ListField(ReferenceField(MCardPlayed))
     red_played_cards = ListField(ReferenceField(MCardPlayed))
+
+    meta = {
+        'shard_key': ('match_id', 'date',)
+    }
 
     def __str__(self):
         return "match [matchid={} date={} users={} blue={} red={}]".format(

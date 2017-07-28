@@ -68,8 +68,8 @@ class Match(models.Model):
     red_played_cards = models.ManyToManyField('CardPlayed', related_name="red_played_cards+")
 
     def __str__(self):
-        return "match [matchid={} date={} users={} blue={} red={}]".format(
-            self.match_id, self.date, [user_ for user_ in self.user.all()], self.blue_hero, self.red_hero)
+        return "match [matchid={} date={} blue={} red={}]".format(
+            self.match_id, self.date, self.blue_hero, self.red_hero)
 
 
 class CardPlayed(models.Model):
