@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions
 from rest_framework.throttling import UserRateThrottle
 from .permissions import IsOwnerOrReadOnly, IsOwner
-from .serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1, MatchSerializer, CardPlayedSerializer
-from .models import TobToken, Match, CardPlayed
+from .serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1
+from .models import TobToken
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -33,21 +33,21 @@ class TobTokenViewSet(viewsets.ModelViewSet):
         return TobTokenSerializer
 
 
-class MatchViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    throttle_classes = (UserRateThrottle,)
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
-    queryset = Match.objects.all()
-    serializer_class = MatchSerializer
-
-
-class CardPlayedViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    throttle_classes = (UserRateThrottle,)
-    permission_classes = (permissions.IsAdminUser, IsOwnerOrReadOnly,)
-    queryset = CardPlayed.objects.all()
-    serializer_class = CardPlayedSerializer
+# class MatchViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows users to be viewed or edited.
+#     """
+#     throttle_classes = (UserRateThrottle,)
+#     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+#     queryset = Match.objects.all()
+#     serializer_class = MatchSerializer
+#
+#
+# class CardPlayedViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows users to be viewed or edited.
+#     """
+#     throttle_classes = (UserRateThrottle,)
+#     permission_classes = (permissions.IsAdminUser, IsOwnerOrReadOnly,)
+#     queryset = CardPlayed.objects.all()
+#     serializer_class = CardPlayedSerializer

@@ -3,7 +3,8 @@ import logging
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
-from .models import Profile, TobToken, Match, CardPlayed
+from .models import Profile, TobToken
+from .documents import MMatch, MCardPlayed
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     # A field from the user's profile:
@@ -52,19 +53,19 @@ class TobTokenSerializerVersion1(serializers.HyperlinkedModelSerializer):
         fields = ('username', 'token', 'is_active')
 
 
-class CardPlayedSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = CardPlayed
-        fields = ('match', 'card', 'turn_played', 'is_spawned')
-
-
-class MatchSerializer(serializers.ModelSerializer):
-
-    blue_played_cards  = CardPlayedSerializer(many=True)
-    red_played_cards = CardPlayedSerializer(many=True)
-
-    class Meta:
-        model = Match
-        fields = ('match_id', 'match_mode', 'date', 'blue_rank', 'blue_hero',
-                  'blue_deck', 'red_hero', 'red_deck', 'turns_played', 'red_starts', 'red_starts',
-                  'blue_won', 'blue_played_cards', 'red_played_cards')
+# class CardPlayedSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = CardPlayed
+#         fields = ('match', 'card', 'turn_played', 'is_spawned')
+#
+#
+# class MatchSerializer(serializers.ModelSerializer):
+#
+#     blue_played_cards  = CardPlayedSerializer(many=True)
+#     red_played_cards = CardPlayedSerializer(many=True)
+#
+#     class Meta:
+#         model = Match
+#         fields = ('match_id', 'match_mode', 'date', 'blue_rank', 'blue_hero',
+#                   'blue_deck', 'red_hero', 'red_deck', 'turns_played', 'red_starts', 'red_starts',
+#                   'blue_won', 'blue_played_cards', 'red_played_cards')

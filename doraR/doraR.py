@@ -7,7 +7,7 @@ import argparse
 import pandas as pd
 from threading import Thread
 from datetime import datetime, timedelta
-from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatch, saveMatchOnMongo
+from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatchOnMongo
 from settings.base import MINNING_URLS
 
 

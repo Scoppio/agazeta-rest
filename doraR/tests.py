@@ -2,10 +2,9 @@ import logging
 from decouple import config
 from django.test import TestCase
 from arquivo.services import getValidTobTokensYield
-from arquivo.models import Match, TobToken
+from arquivo.models import TobToken
 from arquivo.documents import MMatch
 from .doraR import DoraR
-from settings.base import CIRCLECI
 
 # Create your tests here.
 class matchRetrieval(TestCase):
