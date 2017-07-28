@@ -28,9 +28,8 @@ class MongoDbDocuments(TestCase):
                             blue_won=True, blue_played_cards=[card1,card2], red_played_cards=[card4,card3])
 
     def test_Mongo_Match_Created(self):
-        self.logger.info("Number of documents MMatch = %d", MMatch.objects.count())
         assert len(self.match.blue_played_cards) == 2
         assert len(self.match.user) == 2
 
-    def doCleanups(self):
-        self.logger.info("Number of documents MMatch = %d", MMatch.objects.count())
+    #def doCleanups(self):
+    #    self.logger.info("Number of documents MMatch = %d", MMatch.objects.count())

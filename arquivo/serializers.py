@@ -1,10 +1,9 @@
 import uuid
-import logging
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
 from .models import Profile, TobToken
-from .documents import MMatch, MCardPlayed
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     # A field from the user's profile:
@@ -52,20 +51,25 @@ class TobTokenSerializerVersion1(serializers.HyperlinkedModelSerializer):
         model = TobToken
         fields = ('username', 'token', 'is_active')
 
-
-# class CardPlayedSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = CardPlayed
-#         fields = ('match', 'card', 'turn_played', 'is_spawned')
+#
+# class MCardSerializer(mSerializers.DocumentSerializer):
+#     card = StringField(max_length=30)
+#     turn_played = IntField()
+#     is_spawned = BooleanField()
 #
 #
-# class MatchSerializer(serializers.ModelSerializer):
-#
-#     blue_played_cards  = CardPlayedSerializer(many=True)
-#     red_played_cards = CardPlayedSerializer(many=True)
-#
-#     class Meta:
-#         model = Match
-#         fields = ('match_id', 'match_mode', 'date', 'blue_rank', 'blue_hero',
-#                   'blue_deck', 'red_hero', 'red_deck', 'turns_played', 'red_starts', 'red_starts',
-#                   'blue_won', 'blue_played_cards', 'red_played_cards')
+# class MMatchSerializer(mSerializers.DocumentSerializer):
+#     match_id = IntField()
+#     match_mode = StringField(max_length=30)
+#     user = ListField(child=serializers.IntegerField())
+#     date = DateTimeField()
+#     blue_rank = IntField()
+#     blue_hero = StringField(max_length=30)
+#     blue_deck = StringField(max_length=30)
+#     red_hero = StringField(max_length=30)
+#     red_deck = StringField(max_length=30)
+#     turns_played = IntField()
+#     red_starts = BooleanField()
+#     blue_won = BooleanField()
+#     blue_played_cards =ListField(ReferenceField(MCardPlayed))
+#     red_played_cards = ListField(ReferenceField(MCardPlayed))

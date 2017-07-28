@@ -9,7 +9,8 @@ router = routers.DefaultRouter()
 router.register(r'users', viewsets.UserViewSet)
 router.register(r'tob-tokens', viewsets.TobTokenViewSet)
 #router.register(r'matchs', viewsets.MatchViewSet)
-#router.register(r'card-played', viewsets.CardPlayedViewSet)
+#router.register(r'card-played', viewsets.CardViewSet)
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

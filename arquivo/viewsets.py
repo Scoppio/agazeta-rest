@@ -5,6 +5,7 @@ from rest_framework.throttling import UserRateThrottle
 from .permissions import IsOwnerOrReadOnly, IsOwner
 from .serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1
 from .models import TobToken
+from .documents import MMatch, MCardPlayed
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -31,23 +32,23 @@ class TobTokenViewSet(viewsets.ModelViewSet):
         if self.request.version == 'v1':
             return TobTokenSerializerVersion1
         return TobTokenSerializer
-
-
-# class MatchViewSet(viewsets.ModelViewSet):
+#
+#
+# class MatchViewSet(mViewsets.ReadOnlyModelViewSet):
 #     """
 #     API endpoint that allows users to be viewed or edited.
 #     """
 #     throttle_classes = (UserRateThrottle,)
 #     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
-#     queryset = Match.objects.all()
-#     serializer_class = MatchSerializer
+#     queryset = MMatch.objects
+#     serializer_class = MMatchSerializer(queryset)
 #
 #
-# class CardPlayedViewSet(viewsets.ModelViewSet):
+# class CardViewSet(mViewsets.ReadOnlyModelViewSet):
 #     """
 #     API endpoint that allows users to be viewed or edited.
 #     """
 #     throttle_classes = (UserRateThrottle,)
 #     permission_classes = (permissions.IsAdminUser, IsOwnerOrReadOnly,)
-#     queryset = CardPlayed.objects.all()
-#     serializer_class = CardPlayedSerializer
+#     queryset = MCardPlayed.objects
+#     serializer_class = MCardPlayed(queryset)

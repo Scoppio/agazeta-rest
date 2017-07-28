@@ -34,7 +34,7 @@ class MMatch(Document):
     red_played_cards = ListField(ReferenceField(MCardPlayed))
 
     meta = {
-        'shard_key': ('match_id', 'date',)
+        'shard_key': ('machine', 'date',)
     }
 
     def __str__(self):
