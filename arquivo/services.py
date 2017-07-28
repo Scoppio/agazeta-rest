@@ -11,7 +11,7 @@ from .models import TobToken, Match, CardPlayed
 from django.contrib.auth.models import User
 from settings.base import MINNING_URLS
 
-logger = logging.getLogger('sentry.errors')
+logger = logging.getLogger('agazeta.arquivo.services')
 
 def createTobToken(username, token, server, is_active=True, subed=None, valid=None, email=None):
     _server = server
