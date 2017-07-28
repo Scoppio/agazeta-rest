@@ -12,7 +12,7 @@ from settings.base import MINNING_URLS
 
 
 class DoraR():
-    logger = logging.getLogger('agazeta.doraR.DoraR')
+    logger = logging.getLogger('sentry.errors')
 
     def __init__(self, verbose=False, past_days=7, max_retries=3, ranked_only=True, limit=False):
         self.from_date = datetime.today() - timedelta(days=past_days)

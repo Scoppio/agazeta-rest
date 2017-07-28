@@ -50,7 +50,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python manage.py test -v 3 --settings=settings.circleci
+            python manage.py test -v 2 --settings=settings.circleci
 
       - run:
           name: save test reports
