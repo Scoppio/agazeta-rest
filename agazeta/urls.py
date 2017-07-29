@@ -8,9 +8,6 @@ import django_pydenticon.urls
 router = routers.DefaultRouter()
 router.register(r'users', viewsets.UserViewSet)
 router.register(r'tob-tokens', viewsets.TobTokenViewSet)
-#router.register(r'matchs', viewsets.MatchViewSet)
-#router.register(r'card-played', viewsets.CardViewSet)
-
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -20,5 +17,4 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', vAuth.obtain_auth_token),
     url(r'^identicon/', include(django_pydenticon.urls.get_patterns())),
-    url(r'^invitations/', include('invitations.urls', namespace='invitations')),
 ]

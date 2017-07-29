@@ -14,6 +14,5 @@ To run with a simple sqlite database simple run:  `python manage.py runserver --
 For a more sturdy enviroment of development you could use:  `python manage.py runserver --settings=settings.dev-mysql`
 
 ## Using libraries
-- https://github.com/bee-keeper/django-invitations
 - http://www.django-rest-framework.org
 - pandas-rest

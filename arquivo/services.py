@@ -5,7 +5,6 @@ import json
 import time
 import logging
 import requests
-import pandas as pd
 from datetime import datetime
 from .models import TobToken
 from .documents import MMatch, MCardPlayed
@@ -14,21 +13,14 @@ from settings.base import MINNING_URLS
 
 logger = logging.getLogger('sentry.errors')
 
-def createTobToken(username, token, server, is_active=True, subed=None, valid=None, email=None):
-    _server = server
-    _username = username
-    _token = token
-    _is_active=is_active
-    # _email = "" if type(email) != str else email
-    # _subed = subed
-    # _valid = valid
-    tobToken = TobToken(username=_username, token=_token, server=_server, is_active=_is_active)
+def createTobToken(username, token, server, is_active=True):
+    tobToken = TobToken(username=username, token=token, server=server, is_active=is_active)
     try:
         tobToken.save()
     except Exception as e:
-        logger.error("TobToken for username %s failed to be saved", _username)
+        logger.error("TobToken for username %s failed to be saved", username)
 
-    logger.info("Created TobToken for username %s",_username)
+    logger.info("Created TobToken for username %s",username)
 
 
 def createTobTokenAndInviteUserToRegister(server, email, username, token, subed, valid):
@@ -39,7 +31,7 @@ def createTobTokenAndInviteUserToRegister(server, email, username, token, subed,
     raise NotImplementedError()
 
 
-def verifyTobToken(username, token):
+def verifyTobToken(username: str, token: str):
     url = MINNING_URLS["Track-o-Bot"]
     try:
         response = requests.get(url, data={'page': 1, 'username': username, 'token': token})

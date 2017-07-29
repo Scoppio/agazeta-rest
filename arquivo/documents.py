@@ -1,8 +1,9 @@
 import uuid
 from mongoengine import *
-from settings.base import MONGODBNAME
+from settings.base import MONGODBNAME, MONGODBURL, MONGODBPORT
 
-connect(MONGODBNAME)
+
+connect(MONGODBNAME, host = MONGODBURL, port = MONGODBPORT)
 
 
 class MCardPlayed(Document):
@@ -42,5 +43,5 @@ class MMatch(Document):
             self.match_id, self.date, [user_ for user_ in self.user], self.blue_hero, self.red_hero)
 
     def __repr__(self):
-        return "match [matchid={} date={} users={} blue={} red={}]".format(
-            self.match_id, self.date, [user_ for user_ in self.user], self.blue_hero, self.red_hero)
+        return "match [id={} matchid={} date={} users={} blue={} red={}]".format(
+            self.id, self.match_id, self.date, [user_ for user_ in self.user], self.blue_hero, self.red_hero)
