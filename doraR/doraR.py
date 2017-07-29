@@ -7,6 +7,7 @@ import argparse
 import pandas as pd
 from threading import Thread
 from datetime import datetime, timedelta
+from django.db.utils import IntegrityError
 from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatchOnMongo
 from settings.base import MINNING_URLS
 
@@ -131,20 +132,24 @@ class DoraR():
         df[['blue_rank']] = df[['blue_rank']].fillna(20)
 
         for index, entry in df.iterrows():
-            saveMatchOnMongo(match_id=entry['match_id'],
-                        match_mode=entry['match_mode'],
-                        user=entry['user'],
-                        date=entry['date'],
-                        blue_rank=entry['blue_rank'],
-                        blue_hero=entry['blue_hero'],
-                        blue_deck=entry['blue_deck'],
-                        red_hero=entry['red_hero'],
-                        red_deck=entry['red_deck'],
-                        turns_played=entry['turns_played'],
-                        red_starts=entry['red_starts'],
-                        blue_won=entry['blue_won'],
-                        cards=entry['cards_played'])
-            total_entries += 1
+            try:
+                saveMatchOnMongo(match_id=entry['match_id'],
+                            match_mode=entry['match_mode'],
+                            user=entry['user'],
+                            date=entry['date'],
+                            blue_rank=entry['blue_rank'],
+                            blue_hero=entry['blue_hero'],
+                            blue_deck=entry['blue_deck'],
+                            red_hero=entry['red_hero'],
+                            red_deck=entry['red_deck'],
+                            turns_played=entry['turns_played'],
+                            red_starts=entry['red_starts'],
+                            blue_won=entry['blue_won'],
+                            cards=entry['cards_played'])
+                self.logger.debug("Match %d saved in the database", entry['match_id'])
+                total_entries += 1
+            except IntegrityError as e:
+                self.logger.debug("Match %d already present in the database", entry['match_id'])
 
         self.logger.info("Saved a total of %d games",total_entries)
         return

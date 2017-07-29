@@ -1,19 +1,28 @@
 import logging
 import datetime
+from decouple import config
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from model_mommy import mommy
-from .services import getAllTobTokensYield, getValidTobTokensYield, posixConversion, datetimeConversion
+from .dao import userDAO
 from .documents import MMatch, MCardPlayed
-from .models import Profile
+from .models import Profile, TobToken
+from .services import getAllTobTokensYield, getValidTobTokensYield, posixConversion,\
+    datetimeConversion, createTobToken, verifyTobToken, addTokenToUser
 
 class UserAndProfileCreation(TestCase):
+
+    logger = logging.getLogger('sentry.errors')
+
     def setUp(self):
         self.user = mommy.make('User')
-        self.userSaved =  User(username="Test_user", password="154$a%pla9vb")
-        self.profile = Profile(user=self.userSaved, account_type=Profile.ACCOUNT_TYPE[0], partner_sub=True, newsletter_sub=False)
+        self.userSaved = User(username="Test_user", password="154$a%pla9vb")
+        self.profile = Profile(user=self.userSaved, account_type=Profile.ACCOUNT_TYPE[0], partner_sub=True,
+                               newsletter_sub=False)
 
     def test_saving_user_profile(self):
+        '''Saving user should also save its profile'''
         self.userSaved.save()
         assert len(User.objects.filter(username="Test_user")) == 1
         assert self.userSaved.profile.partner_sub == True
@@ -23,14 +32,67 @@ class UserAndProfileCreation(TestCase):
         assert self.user.profile != None
         assert self.user.profile.avatar != None
 
-class ServiceTests(TestCase):
-    def test_getAllTokensYeld(self):
-        for _ in getAllTobTokensYield(1):
-           assert True == False
+    def test_creation_of_profile_for_user(self):
+        '''Use createProfileForUser to create profile'''
+        userDAO.createProfileForUser(self.userSaved, Profile.ACCOUNT_TYPE[0], True, True)
+        assert self.userSaved.profile.account_type == Profile.ACCOUNT_TYPE[0]
 
-        assert True == True
+
+class ServiceTests(TestCase):
+
+    logger = logging.getLogger('sentry.errors')
+
+    def setUp(self):
+        createTobToken("username_1", "token_1", TobToken.SERVERS[0], is_active=True)
+        createTobToken("username_2", "token_2", TobToken.SERVERS[1], is_active=False)
+
+    def test_getAllTokensYeld(self):
+        '''Verify if token grabber functions actually work'''
+        token_found = 0
+        for _ in getValidTobTokensYield():
+           token_found += 1
+
+        self.logger.info("Were found %d valid tokens", token_found)
+
+        assert token_found == 1
+
+        token_found = 0
+        for _ in getAllTobTokensYield():
+           token_found += 1
+
+        self.logger.info("Were found %d tokens in total", token_found)
+        assert token_found == 2
+
+    def test_token_creation_exception(self):
+        '''Check that it is not possible to create duplicated tokens'''
+        self.assertRaises(IntegrityError, createTobToken, "username_2", "token_2", TobToken.SERVERS[1], False)
+
+    def test_token_validity(self):
+        '''Check if the token is valid or invalid, returns None when it is invalid'''
+        assert verifyTobToken(username="username_2", token="token_2") == False
+        assert verifyTobToken(username=config("TOB_INTEG_TEST_USERNAME_1"), token=config("TOB_INTEG_TEST_TOKEN_1")) == True
+
+        for tobToken in getAllTobTokensYield(1):
+            assert verifyTobToken(tobToken=TobToken) == False
+
+    def test_user_creation_with_tob_token(self):
+        '''Declare a tobToken to be of a particular user'''
+        for tobToken in getAllTobTokensYield(1):
+
+            user = userDAO.createUser(username="TestUser", password="897a8sda9", first_name="name", last_name="00a", email="a@a.a")
+
+            addTokenToUser(tobToken, user)
+
+            assert tobToken.user == user
+
+    def test_date_conversions(self):
+        '''Test if the human-readable timestamp to datetime/posix converters actually work'''
+        assert datetimeConversion(date='2016-12-02T02:29:09.000Z') == datetime.datetime(2016, 12, 2, 2, 29, 9)
+        assert posixConversion(date='2016-12-02T02:29:09.000Z') == 1480652949
+
 
 class MongoDbDocuments(TestCase):
+
     logger = logging.getLogger('sentry.errors')
 
     def setUp(self):
@@ -45,5 +107,6 @@ class MongoDbDocuments(TestCase):
                             blue_won=True, blue_played_cards=[card1,card2], red_played_cards=[card4,card3])
 
     def test_Mongo_Match_Created(self):
+        '''Check if the match has the important data inside related to cards and users'''
         assert len(self.match.blue_played_cards) == 2
         assert len(self.match.user) == 2

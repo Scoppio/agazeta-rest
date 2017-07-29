@@ -6,21 +6,23 @@ import time
 import logging
 import requests
 from datetime import datetime
+from .dao import userDAO
 from .models import TobToken
 from .documents import MMatch, MCardPlayed
-from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from settings.base import MINNING_URLS
 
 logger = logging.getLogger('sentry.errors')
+
 
 def createTobToken(username, token, server, is_active=True):
     tobToken = TobToken(username=username, token=token, server=server, is_active=is_active)
     try:
         tobToken.save()
+        logger.info("Created TobToken for username %s", username)
     except Exception as e:
-        logger.error("TobToken for username %s failed to be saved", username)
-
-    logger.info("Created TobToken for username %s",username)
+        logger.info("TobToken for username %s failed to be saved", username)
+        raise IntegrityError("TobToken for username " + username + " failed to be saved")
 
 
 def createTobTokenAndInviteUserToRegister(server, email, username, token, subed, valid):
@@ -28,35 +30,46 @@ def createTobTokenAndInviteUserToRegister(server, email, username, token, subed,
     # _email = "" if type(email) != str else email
     # TODO: Add invitation system to this system
     # logger.info("Created User % for email %s", _email)
-    raise NotImplementedError()
+    raise NotImplementedError
 
 
-def verifyTobToken(username: str, token: str):
+def verifyTobToken(username=None, token=None, tobToken=None):
+    if tobToken:
+        username=tobToken.username
+        token=tobToken.token
+
     url = MINNING_URLS["Track-o-Bot"]
     try:
         response = requests.get(url, data={'page': 1, 'username': username, 'token': token})
-        data = json.loads(response.text())
-        return True if len(data['meta'].keys()) else False
-
     except Exception as e:
-        logging.error(e)
+        logger.error("Failed to capture data from {}".format(url))
+
+    try:
+        assert response.status_code == 200
+
+        data = json.loads(response.text)
+        if len(data['meta'].keys()):
+            logger.info("Token %s is valid", username)
+            return True
+        else:
+            logger.info("Token %s is invalid", username)
+            return False
+
+    except AssertionError as e:
+        if response.status_code == 401:
+            logger.info("The token %s is invalid", username)
+            return False
+        else:
+            logger.error("The url responded with code %d", response.status_code)
+            return None
+    except Exception as e:
+        logger.error("An unexpected error occurred when trying to read the json from %s", username)
         return None
 
 
-def createUserFromTobToken(tobToken, userData):
-    if len(User.objects.filter(email=userData.email)) == 0:
-        newUser = User(username=userData.username,
-                       first_name=userData.first_name,
-                       last_name=userData.last_name,
-                       email=userData.email,
-                       is_active=True)
-        newUser.profile.account_type=('f', 'Free')
-        newUser.profile.partner_sub=userData.partner_sub
-        newUser.profile.newsletter_sub=userData.newsletter_sub
-        newUser.save()
-
-        tobToken.user=newUser
-        tobToken.save()
+def addTokenToUser(tobToken, user):
+    tobToken.user=user
+    tobToken.save()
 
 
 def getValidTobTokensYield(limit : int=0):
@@ -79,7 +92,7 @@ def getAllTobTokensYield(limit : int=0):
     logger.debug("{} tob tokens retrieved from database".format(len(sqlret)))
 
     for i, row in enumerate(sqlret):
-        logger.debug("tob token {} of {} - username {} - account {}".format(i, len(sqlret), row.username, row.account))
+        logger.debug("tob token {} of {} - username {} - account {}".format(i, len(sqlret), row.username, row.user))
         yield row
 
 
@@ -104,11 +117,11 @@ def saveMatchOnMongo(match_id, match_mode, user, date, blue_rank, blue_hero, blu
             return
         else:
             match.user.add(user.id)
-            logger.info("New match entry for the database, match_id={}".format(match_id))
+            logger.info("Match %d already present, user %s added to it", match.match_id, user.id)
             return
 
     except Exception as e:
-        pass
+        raise IntegrityError
 
     # if the match is here, add the user to it if he is not null
     # add the cards to it related to the match
