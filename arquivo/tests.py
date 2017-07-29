@@ -43,8 +43,8 @@ class ServiceTests(TestCase):
     logger = logging.getLogger('sentry.errors')
 
     def setUp(self):
-        createTobToken("username_1", "token_1", TobToken.SERVERS[0], is_active=True)
-        createTobToken("username_2", "token_2", TobToken.SERVERS[1], is_active=False)
+        createTobToken("username_1", "token_1", 'a', is_active=True)
+        createTobToken("username_2", "token_2", 'a', is_active=False)
 
     def test_getAllTokensYeld(self):
         '''Verify if token grabber functions actually work'''
@@ -65,7 +65,7 @@ class ServiceTests(TestCase):
 
     def test_token_creation_exception(self):
         '''Check that it is not possible to create duplicated tokens'''
-        self.assertRaises(IntegrityError, createTobToken, "username_2", "token_2", TobToken.SERVERS[1], False)
+        self.assertRaises(IntegrityError, createTobToken, "username_2", "token_2", 'a', False)
 
     def test_token_validity(self):
         '''Check if the token is valid or invalid, returns None when it is invalid'''
