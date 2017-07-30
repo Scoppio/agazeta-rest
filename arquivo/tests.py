@@ -73,7 +73,7 @@ class ServiceTests(TestCase):
         assert verifyTobToken(username=config("TOB_INTEG_TEST_USERNAME_1"), token=config("TOB_INTEG_TEST_TOKEN_1")) == True
 
         for tobToken in getAllTobTokensYield(1):
-            assert verifyTobToken(tobToken=TobToken) == False
+            assert verifyTobToken(tobToken=tobToken) == False
 
     def test_user_creation_with_tob_token(self):
         '''Declare a tobToken to be of a particular user'''
