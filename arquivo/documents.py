@@ -14,8 +14,11 @@ class MCardPlayed(Document):
     def __str__(self):
         return "card_played [card={} turn_played={} is_spawned={}]".format(self.card, self.turn_played, self.is_spawned)
 
+    def __dict__(self):
+        return { "card" : self.card, "turn_played": self.turn_played, "is_spawned" : self.is_spawned }
+
     def __repr__(self):
-        return "card_played [card={} match_id={} turn_played={} is_spawned={}]".format(self.card, self.turn_played, self.is_spawned)
+        return "card_played [card={}turn_played={} is_spawned={}]".format(self.card, self.turn_played, self.is_spawned)
 
 
 class MMatch(Document):

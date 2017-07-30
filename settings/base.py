@@ -39,10 +39,10 @@ PRE_REQ_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
+    'opbeat.contrib.django',
     'rest_framework',
     'rest_framework.authtoken',
     'django_pydenticon',
-    'opbeat.contrib.django',
     ]
 
 MY_APPS = [

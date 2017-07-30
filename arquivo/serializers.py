@@ -1,4 +1,5 @@
 import uuid
+import json
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
@@ -51,25 +52,31 @@ class TobTokenSerializerVersion1(serializers.HyperlinkedModelSerializer):
         model = TobToken
         fields = ('username', 'token', 'is_active')
 
-#
-# class MCardSerializer(mSerializers.DocumentSerializer):
-#     card = StringField(max_length=30)
-#     turn_played = IntField()
-#     is_spawned = BooleanField()
-#
-#
-# class MMatchSerializer(mSerializers.DocumentSerializer):
-#     match_id = IntField()
-#     match_mode = StringField(max_length=30)
-#     user = ListField(child=serializers.IntegerField())
-#     date = DateTimeField()
-#     blue_rank = IntField()
-#     blue_hero = StringField(max_length=30)
-#     blue_deck = StringField(max_length=30)
-#     red_hero = StringField(max_length=30)
-#     red_deck = StringField(max_length=30)
-#     turns_played = IntField()
-#     red_starts = BooleanField()
-#     blue_won = BooleanField()
-#     blue_played_cards =ListField(ReferenceField(MCardPlayed))
-#     red_played_cards = ListField(ReferenceField(MCardPlayed))
+
+class MCardSerializer(serializers.Serializer):
+    card = serializers.CharField(max_length=30)
+    turn_played = serializers.IntegerField()
+    is_spawned = serializers.BooleanField()
+
+
+class MMatchSerializer(serializers.Serializer):
+    match_id =  serializers.IntegerField()
+    match_mode = serializers.CharField(max_length=30)
+    user = serializers.ReadOnlyField(source='user.id')
+    date = serializers.DateTimeField()
+    blue_rank =  serializers.IntegerField()
+    blue_hero = serializers.CharField(max_length=30)
+    blue_deck = serializers.CharField(max_length=30)
+    red_hero = serializers.CharField(max_length=30)
+    red_deck = serializers.CharField(max_length=30)
+    turns_played =  serializers.IntegerField()
+    red_starts = serializers.BooleanField()
+    blue_won = serializers.BooleanField()
+    blue_played_cards = serializers.SerializerMethodField()
+    red_played_cards = serializers.SerializerMethodField()
+
+    def get_blue_played_cards(self, obj):
+        return [card.__dict__() for card in obj.red_played_cards]
+
+    def get_red_played_cards(self, obj):
+        return [card.__dict__() for card in obj.red_played_cards]
