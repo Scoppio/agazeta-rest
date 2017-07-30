@@ -121,7 +121,7 @@ def saveMatchOnMongo(match_id, match_mode, user, date, blue_rank, blue_hero, blu
             return
 
     except Exception as e:
-        raise IntegrityError
+        pass
 
     # if the match is here, add the user to it if he is not null
     # add the cards to it related to the match
