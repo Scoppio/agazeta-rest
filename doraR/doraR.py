@@ -146,10 +146,11 @@ class DoraR():
                             red_starts=entry['red_starts'],
                             blue_won=entry['blue_won'],
                             cards=entry['cards_played'])
-                self.logger.debug("Match %d saved in the database", entry['match_id'])
+                # self.logger.debug("Match %d saved in the database", entry['match_id'])
                 total_entries += 1
             except IntegrityError as e:
-                self.logger.debug("Match %d already present in the database", entry['match_id'])
+                #self.logger.debug("Match %d already present in the database", entry['match_id'])
+                pass
 
         self.logger.info("Saved a total of %d games",total_entries)
         return
