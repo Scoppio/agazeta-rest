@@ -40,6 +40,7 @@ PRE_REQ_APPS = [
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'opbeat.contrib.django',
+    'django_celery_beat',
     'rest_framework',
     'rest_framework.authtoken',
     'django_pydenticon',

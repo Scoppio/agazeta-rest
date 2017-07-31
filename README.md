@@ -16,3 +16,5 @@ For a more sturdy enviroment of development you could use:  `python manage.py ru
 ## Using libraries
 - http://www.django-rest-framework.org
 - pandas-rest
+- django_celery_beat
+    - `celery -A proj beat -l info -S django`
