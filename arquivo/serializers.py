@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
 from .models import Profile, TobToken
+from .documents import MMatch
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -62,6 +63,7 @@ class MCardSerializer(serializers.Serializer):
 class MMatchSerializer(serializers.Serializer):
     match_id =  serializers.IntegerField()
     match_mode = serializers.CharField(max_length=30)
+    # the user should not appear unless
     user = serializers.ReadOnlyField(source='user.id')
     date = serializers.DateTimeField()
     blue_rank =  serializers.IntegerField()

@@ -1,12 +1,12 @@
-import json
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
-from .permissions import IsOwnerOrReadOnly, IsOwner
-from .serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1, MMatchSerializer
-from .models import TobToken
-from .documents import MMatch, MCardPlayed
-from arquivo.services import matchServices
+from arquivo.permissions import IsOwnerOrReadOnly, IsOwner
+from arquivo.serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1, MMatchSerializer
+from arquivo.services import matchServices, tobTokenServices
+from django.shortcuts import get_object_or_404
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -24,7 +24,7 @@ class TobTokenViewSet(viewsets.ModelViewSet):
     """
     throttle_classes = (UserRateThrottle,)
     permission_classes = (permissions.IsAdminUser,)
-    queryset = TobToken.objects.all()
+    queryset = tobTokenServices.getAllTobTokens()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -37,6 +37,6 @@ class TobTokenViewSet(viewsets.ModelViewSet):
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     throttle_classes = (UserRateThrottle,)
-    permission_classes = (permissions.IsAdminUser)
-    queryset = matchServices.findAll()
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = matchServices.getAllMatches().order_by('match_id')
     serializer_class = MMatchSerializer

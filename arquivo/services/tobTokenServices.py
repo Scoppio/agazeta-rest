@@ -90,3 +90,5 @@ def getAllTobTokensYield(limit : int=0):
         logger.debug("tob token {} of {} - username {} - account {}".format(i, len(sqlret), row.username, row.user))
         yield row
 
+def getAllTobTokens():
+    return tobTokenDAO.findAll()

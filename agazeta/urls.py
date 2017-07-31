@@ -8,6 +8,7 @@ import django_pydenticon.urls
 router = routers.DefaultRouter()
 router.register(r'users', viewsets.UserViewSet)
 router.register(r'tob-tokens', viewsets.TobTokenViewSet)
+router.register(r'match', viewsets.MatchViewSet, "Matchs")
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

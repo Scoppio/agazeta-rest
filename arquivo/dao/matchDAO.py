@@ -10,7 +10,7 @@ logger = logging.getLogger('sentry.errors')
 
 
 def findAll():
-    return [match for match in MMatch.objects.all()]
+    return  MMatch.objects.all()
 
 
 def findOne(match_id: int):

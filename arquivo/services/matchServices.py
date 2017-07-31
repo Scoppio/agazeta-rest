@@ -14,6 +14,9 @@ def getAllMatches():
     return matchDAO.findAll()
 
 
+def findMatchByMatchId(match_id):
+    return matchDAO.findOne(match_id)
+
 def saveMatch(match_id, match_mode, user, date, blue_rank, blue_hero,
               blue_deck, red_hero, red_deck, turns_played, red_starts, blue_won, cards):
 
