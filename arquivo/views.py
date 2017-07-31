@@ -6,7 +6,7 @@ from rest_framework.throttling import UserRateThrottle
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated,))
 def account_profile(request):
-	return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+    return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
@@ -20,11 +20,11 @@ def matchList(request, page):
 
 
 
-# class CardViewSet(mViewsets.ReadOnlyModelViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited.
-#     """
-#     throttle_classes = (UserRateThrottle,)
-#     permission_classes = (permissions.IsAdminUser, IsOwnerOrReadOnly,)
-#     queryset = MCardPlayed.objects
-#     serializer_class = MCardPlayed(queryset)
+    # class CardViewSet(mViewsets.ReadOnlyModelViewSet):
+    #     """
+    #     API endpoint that allows users to be viewed or edited.
+    #     """
+    #     throttle_classes = (UserRateThrottle,)
+    #     permission_classes = (permissions.IsAdminUser, IsOwnerOrReadOnly,)
+    #     queryset = MCardPlayed.objects
+    #     serializer_class = MCardPlayed(queryset)

@@ -38,4 +38,4 @@ def createProfileForUser(user, account_type, partner_sub, newsletter_sub):
         user.save()
     except Exception as e:
         logger.error(e)
-        raise IntegrityError("An error occured while trying to set user {} profile".format(user))
+        raise IntegrityError("An error occurred while trying to set user {} profile".format(user))

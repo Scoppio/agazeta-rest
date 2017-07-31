@@ -1,7 +1,7 @@
 import logging
 from decouple import config
 from django.test import TestCase
-from arquivo.models import TobToken
+from arquivo.services import tobTokenServices, matchServices
 from arquivo.documents import MMatch
 from .doraR import DoraR
 
@@ -15,7 +15,7 @@ class matchRetrieval(TestCase):
 
     def test_match_capture(self):
         '''Capture MATCH with DoraR and persist it'''
-        tob_token = TobToken(username=config("TOB_INTEG_TEST_USERNAME_1"), token=config("TOB_INTEG_TEST_TOKEN_1"))
+        tob_token = tobTokenServices.createTobToken(username=config("TOB_INTEG_TEST_USERNAME_1"), token=config("TOB_INTEG_TEST_TOKEN_1"), server="a")
         game_data_history = self.DoraR.getTobData(tob_token=tob_token, override_limit_date=True)
         self.DoraR.matchEntryGenerator(tob_token=tob_token, game_data_history=game_data_history)
 
@@ -25,4 +25,4 @@ class matchRetrieval(TestCase):
 
         assert len(game_data_history) > 0
         assert game_data_history[0]["id"] != None
-        assert MMatch.objects.count() > 0
+        assert len(matchServices.getAllMatches()) > 0

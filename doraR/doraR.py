@@ -8,7 +8,8 @@ import pandas as pd
 from threading import Thread
 from datetime import datetime, timedelta
 from django.db.utils import IntegrityError
-from arquivo.services import posixConversion, datetimeConversion, getValidTobTokensYield, saveMatchOnMongo
+from arquivo.utils.dateUtils import posixConversion, datetimeConversion
+from arquivo.services import matchServices, tobTokenServices
 from settings.base import MINNING_URLS
 
 
@@ -21,7 +22,10 @@ class DoraR():
         self.max_retries = max_retries
         self.ranked_only = ranked_only
         self.limit = limit
-        self.logger.info("Starting Dora R. with config - %d days window, %d retries, ranked_only=%s, limit=%s", past_days, max_retries, ranked_only, limit)
+        self.logger.info(
+            "Starting Dora R. with config - %d days window, %d retries, ranked_only=%s, limit=%s",
+            past_days, max_retries, ranked_only, limit
+        )
         self.url = MINNING_URLS["Track-o-Bot"]
 
     def getAllDataFromSingleToken(self, tob_token):
@@ -41,8 +45,13 @@ class DoraR():
         try_and_error = self.max_retries
         while (True):
             try:
-                response = requests.get(self.url, data={ "page": page, "username": tob_token.username, "token": tob_token.token })
-                self.logger.debug("username %s - page %d - user %s - status code of the request %d",tob_token.username, page, tob_token.user, response.status_code)
+                response = requests.get(
+                    self.url, data={"page": page, "username": tob_token.username, "token": tob_token.token}
+                )
+                self.logger.debug(
+                    "username %s - page %d - user %s - status code of the request %d",
+                    tob_token.username, page, tob_token.user, response.status_code
+                )
 
             except Exception as e:
                 self.logger.error(
@@ -86,7 +95,7 @@ class DoraR():
 
             page += 1
 
-            self.logger.info("Captured %d matchs in this given time window from %s to today",len(data_history), self.from_date)
+            self.logger.info("Captured %d matchs in this given time window from %s to today", len(data_history), self.from_date)
 
         return data_history
 
@@ -133,7 +142,7 @@ class DoraR():
 
         for index, entry in df.iterrows():
             try:
-                saveMatchOnMongo(match_id=entry['match_id'],
+                matchServices.saveMatch(match_id=entry['match_id'],
                             match_mode=entry['match_mode'],
                             user=entry['user'],
                             date=entry['date'],
@@ -149,10 +158,10 @@ class DoraR():
                 # self.logger.debug("Match %d saved in the database", entry['match_id'])
                 total_entries += 1
             except IntegrityError as e:
-                #self.logger.debug("Match %d already present in the database", entry['match_id'])
+                # self.logger.debug("Match %d already present in the database", entry['match_id'])
                 pass
 
-        self.logger.info("Saved a total of %d games",total_entries)
+        self.logger.info("Saved a total of %d games", total_entries)
         return
 
     def runOnExecutor(self):
@@ -161,7 +170,7 @@ class DoraR():
         Thread(target=self.start_auto).start()
 
     def startAuto(self):
-        for tob_token in getValidTobTokensYield():
+        for tob_token in tobTokenServices.getValidTobTokensYield():
             print(tob_token)
             game_data_history = self.getTobData(tob_token=tob_token)
             print("found {} games".format(len(game_data_history)))

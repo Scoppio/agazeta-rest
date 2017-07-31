@@ -3,7 +3,7 @@ from mongoengine import *
 from settings.base import MONGODBNAME, MONGODBURL, MONGODBPORT
 
 
-connect(MONGODBNAME, host = MONGODBURL, port = MONGODBPORT)
+connect(MONGODBNAME, host=MONGODBURL, port=MONGODBPORT)
 
 
 class MCardPlayed(Document):
@@ -15,7 +15,7 @@ class MCardPlayed(Document):
         return "card_played [card={} turn_played={} is_spawned={}]".format(self.card, self.turn_played, self.is_spawned)
 
     def __dict__(self):
-        return { "card" : self.card, "turn_played": self.turn_played, "is_spawned" : self.is_spawned }
+        return {"card": self.card, "turn_played": self.turn_played, "is_spawned": self.is_spawned}
 
     def __repr__(self):
         return "card_played [card={}turn_played={} is_spawned={}]".format(self.card, self.turn_played, self.is_spawned)
@@ -42,9 +42,9 @@ class MMatch(Document):
     }
 
     def __str__(self):
-        return "match [matchid={} date={} users={} blue={} red={}]".format(
-            self.match_id, self.date, [user_ for user_ in self.user], self.blue_hero, self.red_hero)
+        return "match [matchid={} date={} blue={} red={}]".format(
+            self.match_id, self.date, self.blue_hero, self.red_hero)
 
     def __repr__(self):
-        return "match [id={} matchid={} date={} users={} blue={} red={}]".format(
-            self.id, self.match_id, self.date, [user_ for user_ in self.user], self.blue_hero, self.red_hero)
+        return "match [id={} matchid={} date={} blue={} red={}]".format(
+            self.id, self.match_id, self.date, self.blue_hero, self.red_hero)

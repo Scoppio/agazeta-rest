@@ -17,12 +17,12 @@ DEBUG = config('DEBUG', cast=bool, default=False)
 CIRCLECI = config('CIRCLECI', cast=bool, default=False)
 
 
-MAILCHIMP_API_KEY=config('MAILCHIMP_API_KEY')
+MAILCHIMP_API_KEY = config('MAILCHIMP_API_KEY')
 
 ALLOWED_HOSTS = ['*']
 
 MINNING_URLS = {
-    "Track-o-Bot" : config("TOB_URL")
+    "Track-o-Bot": config("TOB_URL")
 }
 
 MONGODBNAME = config("MONGO_DB_NAME")
@@ -129,7 +129,7 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
+            'level': 'WARNING',  # To capture more than ERROR, change to WARNING, INFO, etc.
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             'tags': {'custom-tag': 'x'},
         },

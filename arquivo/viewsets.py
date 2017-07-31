@@ -6,6 +6,7 @@ from .permissions import IsOwnerOrReadOnly, IsOwner
 from .serializers import UserSerializer, TobTokenSerializer, TobTokenSerializerVersion1, MMatchSerializer
 from .models import TobToken
 from .documents import MMatch, MCardPlayed
+from arquivo.services import matchServices
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -37,5 +38,5 @@ class TobTokenViewSet(viewsets.ModelViewSet):
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     throttle_classes = (UserRateThrottle,)
     permission_classes = (permissions.IsAdminUser)
-    queryset = matchDAO.findAll()
+    queryset = matchServices.findAll()
     serializer_class = MMatchSerializer
