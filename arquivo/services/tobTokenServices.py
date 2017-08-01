@@ -92,3 +92,6 @@ def getAllTobTokensYield(limit : int=0):
 
 def getAllTobTokens():
     return tobTokenDAO.findAll()
+
+def getAllValidTobTokens():
+    return tobTokenDAO.findAllValidTokens()

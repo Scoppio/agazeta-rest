@@ -16,12 +16,13 @@ from settings.base import MINNING_URLS
 class DoraR():
     logger = logging.getLogger('sentry.errors')
 
-    def __init__(self, verbose=False, past_days=7, max_retries=3, ranked_only=True, limit=False):
+    def __init__(self, past_days=7, max_retries=3, ranked_only=True, limit=False, override_limit_date=False):
         self.from_date = datetime.today() - timedelta(days=past_days)
         self.past_days = past_days
         self.max_retries = max_retries
         self.ranked_only = ranked_only
         self.limit = limit
+        self.override_limit=override_limit_date
         self.logger.info(
             "Starting Dora R. with config - %d days window, %d retries, ranked_only=%s, limit=%s",
             past_days, max_retries, ranked_only, limit
@@ -32,10 +33,10 @@ class DoraR():
         game_data_history = self.getTobData(tob_token=tob_token)
         self.matchEntryGenerator(tob_token=tob_token, game_data_history=game_data_history)
 
-    def getTobData(self, tob_token, override_limit_date=False):
+    def getTobData(self, tob_token):
         """Actually downloads the raw data from track o bot"""
         from_date = time.mktime(self.from_date.timetuple())
-        if override_limit_date:
+        if self.override_limit_date:
             self.logger.warning("Capturing all data available for ToB account %s", tob_token.username)
         else:
             self.logger.info("Capturing data available for ToB account %s", tob_token.username)
@@ -75,7 +76,7 @@ class DoraR():
                 continue
 
             # This line allows you to get all data, not matter how long ago it was created
-            if not override_limit_date:
+            if not self.override_limit_date:
                 for n in range(len(data['history'])):
                     # Remove data that is older than the data we are looking for so we free up some memory
                     if posixConversion(data['history'][n]['added']) < from_date:
@@ -164,25 +165,32 @@ class DoraR():
         self.logger.info("Saved a total of %d games", total_entries)
         return
 
-    def runOnExecutor(self):
-        """Runs Starseeker in a thread, necessary since it takes alot of time to run"""
-        self.logger.info("Starting Dora R. Thread")
-        Thread(target=self.start_auto).start()
+    def runOnThread(self, tobTokens : list):
+        '''Runs Starseeker in a thread, necessary since it takes alot of time to run'''
+        self.logger.info("Starting Dora R. Thread for %d tokens - starting at %s", len(tobTokens), tobTokens[0])
+        Thread(target=self.startAuto, kwargs={"tobTokens" : tobTokens}).start()
 
-    def startAuto(self):
-        for tob_token in tobTokenServices.getValidTobTokensYield():
-            print(tob_token)
-            game_data_history = self.getTobData(tob_token=tob_token)
-            print("found {} games".format(len(game_data_history)))
-            self.matchEntryGenerator(tob_token=tob_token, game_data_history=game_data_history)
+    def startAuto(self, tobTokens):
+        '''Start automatic with a given tobToken'''
+        for tobToken in tobTokens:
+            game_data_history = self.getTobData(tob_token=tobToken)
+            # print("found {} games".format(len(game_data_history)))
+            self.matchEntryGenerator(tob_token=tobToken, game_data_history=game_data_history)
 
+#    def startAuto(self):
+#        for tob_token in tobTokenServices.getValidTobTokensYield():
+#            print(tob_token)
+#            game_data_history = self.getTobData(tob_token=tob_token)
+#            print("found {} games".format(len(game_data_history)))
+#            self.matchEntryGenerator(tob_token=tob_token, game_data_history=game_data_history)
 
-if __name__ == '__main__':
-    """In case this is run manually"""
-    parser = argparse.ArgumentParser(description='mine data from trackobot')
-    parser.add_argument('-d', '--past_days', type=int, default='2',
-                        help='how long ago is the last relevant game played by a player')
-    args = parser.parse_args()
-
-    D = DoraR(past_days=args['past_days'])
-    D.runOnExecutor()
+#
+# if __name__ == '__main__':
+#     """In case this is run manually"""
+#     parser = argparse.ArgumentParser(description='mine data from trackobot')
+#     parser.add_argument('-d', '--past_days', type=int, default='2',
+#                         help='how long ago is the last relevant game played by a player')
+#     args = parser.parse_args()
+#
+#     D = DoraR(past_days=args['past_days'])
+#     D.runOnThread()

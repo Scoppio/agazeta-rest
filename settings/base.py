@@ -1,5 +1,6 @@
 import os
 import raven
+import djcelery
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -16,7 +17,6 @@ DEBUG = config('DEBUG', cast=bool, default=False)
 
 CIRCLECI = config('CIRCLECI', cast=bool, default=False)
 
-
 MAILCHIMP_API_KEY = config('MAILCHIMP_API_KEY')
 
 ALLOWED_HOSTS = ['*']
@@ -29,6 +29,11 @@ MONGODBNAME = config("MONGO_DB_NAME")
 MONGODBURL = config("MONGO_DB_URL")
 MONGODBPORT = config("MONGO_DB_PORT", cast=int)
 
+
+djcelery.setup_loader()
+BROKER_URL = 'django://'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
 # Application definition
 
 PRE_REQ_APPS = [
@@ -40,7 +45,8 @@ PRE_REQ_APPS = [
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'opbeat.contrib.django',
-    'django_celery_beat',
+    'djcelery',
+    'kombu.transport.django',
     'rest_framework',
     'rest_framework.authtoken',
     'django_pydenticon',

@@ -10,13 +10,13 @@ class matchRetrieval(TestCase):
     logger = logging.getLogger('sentry.errors')
 
     def setUp(self):
-        self.DoraR = DoraR(past_days=1, limit=True)
+        self.DoraR = DoraR(past_days=1, limit=True, override_limit_date=True)
 
 
     def test_match_capture(self):
         '''Capture MATCH with DoraR and persist it'''
         tob_token = tobTokenServices.createTobToken(username=config("TOB_INTEG_TEST_USERNAME_1"), token=config("TOB_INTEG_TEST_TOKEN_1"), server="a")
-        game_data_history = self.DoraR.getTobData(tob_token=tob_token, override_limit_date=True)
+        game_data_history = self.DoraR.getTobData(tob_token=tob_token)
         self.DoraR.matchEntryGenerator(tob_token=tob_token, game_data_history=game_data_history)
 
         self.logger.debug("There is %d matches saved on mongodb", MMatch.objects.count())
